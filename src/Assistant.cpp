@@ -1,27 +1,34 @@
 #include "Assistant.h"
-#include "../tools/SystemTool.h"
-#include "../tools/FileTool.h"
-#include "../tools/ToolManager.h"
 
 #include <iostream>
 
-
-void Assistant::run() // Assistant::run() means that the run() function is a member function of the Assistant class. The scope resolution operator (::) is used to define the function outside the class definition, indicating that it belongs to the Assistant class.  
+void Assistant::run()
 {
     std::string command;
 
     std::cout << "================================\n";
-    std::cout << "       LOCAL ASSISTANT v0.1\n";
-    std::cout << "================================\n\n";
+    std::cout << "       LOCAL ASSISTANT v0.2\n";
+    std::cout << "================================\n";
+    std::cout << "Type 'help' for available commands.\n\n";
 
     while (true)
     {
         std::cout << "You: ";
-        std::getline(std::cin, command);
+
+        if (!std::getline(std::cin, command))
+        {
+            std::cout << "\nAssistant: Input closed. Goodbye.\n";
+            break;
+        }
+
+        if (command.empty())
+        {
+            continue;
+        }
 
         if (command == "exit")
         {
-            std::cout << "Assistant: Goodbye.\n"; 
+            std::cout << "Assistant: Goodbye.\n";
             break;
         }
 
@@ -31,10 +38,5 @@ void Assistant::run() // Assistant::run() means that the run() function is a mem
 
 void Assistant::processCommand(const std::string& command)
 {
-    if (command == "exit")
-    {
-        return;
-    }
-
     std::cout << "Assistant: " << toolManager.execute(command) << '\n';
 }
