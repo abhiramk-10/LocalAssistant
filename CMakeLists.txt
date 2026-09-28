@@ -11,6 +11,7 @@ add_executable(LocalAssistant
     src/Assistant.cpp
     tools/SystemTool.cpp
     tools/FileTool.cpp
+    tools/ToolManager.cpp
 )
 
 target_include_directories(LocalAssistant PRIVATE
