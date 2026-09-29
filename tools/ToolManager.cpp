@@ -1,22 +1,54 @@
 #include "ToolManager.h"
+// Includes this class's declaration before defining its functions.
 
 #include "FileTool.h"
+// Provides file operations such as listing and reading files.
+
 #include "SystemTool.h"
+// Provides system operations such as time and computer information.
 
 #include <sstream>
+// Provides string-stream types. The current file uses string-related
+// standard-library functionality and keeps parsing logic readable.
 
+// ------------------------------------------------------------
+// Helper function: startsWith
+// ------------------------------------------------------------
+// A helper function is a small function used internally to support
+// a larger operation.
+//
+// This function is inside an unnamed namespace, which gives it
+// internal linkage: other .cpp files cannot directly use it.
 namespace
 {
     bool startsWith(const std::string& value, const std::string& prefix)
     {
+        // rfind(prefix, 0) searches for prefix starting at position 0.
+        // If it returns 0, the string begins with that prefix.
         return value.rfind(prefix, 0) == 0;
     }
 }
 
+// ------------------------------------------------------------
+// ToolManager::execute
+// ------------------------------------------------------------
+// This is the main command-dispatch function.
+//
+// Input:
+//     command = text such as "time", "list", or "read file.txt"
+//
+// Output:
+//     a string containing the result or an error message.
 std::string ToolManager::execute(const std::string& command)
 {
+    // --------------------------------------------------------
+    // Exact command matching
+    // --------------------------------------------------------
+    // The == operator compares two strings for equality.
     if (command == "help")
     {
+        // Adjacent string literals are automatically joined by C++.
+        // This lets us format a long message over multiple lines.
         return
             "Available commands:\n"
             "  help                       Show available commands\n"
@@ -33,6 +65,8 @@ std::string ToolManager::execute(const std::string& command)
 
     if (command == "time")
     {
+        // Scope resolution operator '::' selects a function from
+        // the SystemTool namespace.
         return SystemTool::getCurrentTime();
     }
 
@@ -48,6 +82,8 @@ std::string ToolManager::execute(const std::string& command)
 
     if (command == "system")
     {
+        // The '+' operator concatenates std::string values.
+        // std::to_string converts the processor count into text.
         return "Computer: " + SystemTool::getComputerName() +
                "\nArchitecture: " + SystemTool::getArchitecture() +
                "\nProcessors: " +
@@ -59,8 +95,15 @@ std::string ToolManager::execute(const std::string& command)
         return FileTool::listCurrentDirectory();
     }
 
+    // --------------------------------------------------------
+    // Commands with arguments
+    // --------------------------------------------------------
+    // Unlike "time", a command such as "read notes.txt" contains
+    // both a command name and user-provided data.
     if (startsWith(command, "read "))
     {
+        // substr(5) returns a new string beginning at character 5.
+        // For "read notes.txt", this produces "notes.txt".
         const std::string fileName = command.substr(5);
 
         if (fileName.empty())
@@ -91,6 +134,9 @@ std::string ToolManager::execute(const std::string& command)
     if (startsWith(command, "write "))
     {
         const std::string arguments = command.substr(6);
+
+        // find() returns the position of the requested separator.
+        // std::string::npos means the separator was not found.
         const std::size_t separator = arguments.find(" | ");
 
         if (separator == std::string::npos)
@@ -98,7 +144,10 @@ std::string ToolManager::execute(const std::string& command)
             return "Usage: write <file> | <text>";
         }
 
+        // substr() extracts the part before the separator.
         const std::string fileName = arguments.substr(0, separator);
+
+        // separator + 3 skips the three characters in " | ".
         const std::string content = arguments.substr(separator + 3);
 
         if (fileName.empty() || content.empty())
@@ -114,5 +163,7 @@ std::string ToolManager::execute(const std::string& command)
         return "Error: Could not write to " + fileName;
     }
 
-    return "Unknown command: " + command + "\nType 'help' to see available commands.";
+    // No known command matched the input.
+    return "Unknown command: " + command +
+           "\nType 'help' to see available commands.";
 }
