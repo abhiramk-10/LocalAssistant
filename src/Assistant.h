@@ -5,37 +5,53 @@
 #include <string>
 // std::string is the C++ standard-library type used for text.
 
-#include "../tools/ToolManager.h"
-// Assistant owns a ToolManager, so the complete ToolManager
-// declaration is needed here.
+#include "../core/Brain.h"
+// Brain converts natural-language input into a structured decision.
+
+#include "../core/TaskManager.h"
+// TaskManager stores tasks and sends them to the tool layer.
 
 // ------------------------------------------------------------
 // class Assistant
 // ------------------------------------------------------------
-// A class groups related data and functions into one type.
-// Assistant is the main application/controller layer.
+// Assistant is the application's user-interface/controller layer.
 //
-// Its job is to handle the interaction loop and pass work to
-// lower-level components instead of implementing every tool itself.
+// It connects the major parts of the system:
+//
+//     User
+//       ↓
+//     Assistant
+//       ↓
+//     Brain
+//       ↓
+//     TaskManager
+//       ↓
+//     ToolManager
+//       ↓
+//     Tools
+//
+// This is our first important step from a collection of tools
+// toward an actual assistant architecture.
 class Assistant
 {
 public:
     // Public means code outside the class can call this function.
-    // run() starts the assistant's main user-interaction loop.
+    // run() starts the main user-interaction loop.
     void run();
 
 private:
-    // private means only Assistant's member functions can directly
-    // call/access this function.
-    //
-    // processCommand() takes one user command and sends it to the
-    // execution layer.
+    // processCommand() takes one complete line entered by the user
+    // and moves it through the assistant pipeline.
     void processCommand(const std::string& command);
 
     // --------------------------------------------------------
     // Composition
     // --------------------------------------------------------
-    // ToolManager is stored as a member object inside Assistant.
-    // This is called composition: an Assistant "has a" ToolManager.
-    ToolManager toolManager;
+    // Assistant "has a" Brain.
+    // The Brain is responsible for understanding the request.
+    Brain brain;
+
+    // Assistant "has a" TaskManager.
+    // TaskManager is responsible for representing and executing work.
+    TaskManager taskManager;
 };
